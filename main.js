@@ -3,8 +3,9 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+
+// Get full path to coutries.json file
 const COUNTRIES = path.join(__dirname, 'countries.json');
-console.log(COUNTRIES);
 app.set('port', (process.env.PORT || 4000));
 
 app.use('/', express.static(path.join(__dirname, 'dist')));
@@ -17,7 +18,6 @@ app.use(function(req, res, next) {
     res.setHeader('Cache-Control', 'no-cache');
     next();
 });
-
 
 app.get('/api/countries', function (req, res) {
     fs.readFile(COUNTRIES, function (err, data) {
