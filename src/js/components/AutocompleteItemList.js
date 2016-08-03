@@ -10,10 +10,10 @@ export default class AutocompleteItemList extends Component {
         const items = this.props.items.map(function items(item, index) {
             return (
                 <li key={item.abbr}>
-                    <AutocompleteItem details={item} />
+                    <AutocompleteItem details={item} selectItem={this.props.handleSelect} />
                 </li>
             );
-        });
+        }.bind(this));
         return (
             <ul>
                 {items}
