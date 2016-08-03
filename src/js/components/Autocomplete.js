@@ -34,13 +34,13 @@ export default class Autocomplete extends Component {
             },
             ArrowUp (event) {
                 event.preventDefault();
-                event.preventDefault();
                 const itemsLength = this.state.items.length;
 
                 if (!this.state.items.length) {
                     return;
                 }
                 const { highlightedIndex } = this.state;
+
                 const index = (
                     highlightedIndex === null ||
                     highlightedIndex === 0
@@ -53,13 +53,13 @@ export default class Autocomplete extends Component {
             },
             Enter (event) {
                 event.preventDefault();
-                const itemsLength = this.state.items.length;
                 const {items, highlightedIndex} = this.state;
-                const value = items[highlightedIndex].name;
 
-                if (!this.state.items.length) {
+                if (!items[highlightedIndex]) {
                     return;
                 }
+
+                const value = items[highlightedIndex].name;
 
                 this.setState({
                     isOpen: false,
@@ -81,9 +81,9 @@ export default class Autocomplete extends Component {
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
-        this.filterItems();
+    // Helpers
+    setIgnoreBlur(ignore) {
+        this._ignoreBlur = ignore;
     }
 
     filterItems() {
@@ -109,56 +109,6 @@ export default class Autocomplete extends Component {
         this.setState({items: filteredItems});
     }
 
-    handleKeyUp(event) {
-        this.filterItems()
-        this.setIgnoreBlur(false);
-    }
-
-    handleFocus(event) {
-        this.setState({
-            isOpen: true,
-        });
-
-        this.filterItems();
-    }
-
-    handleBlur(event) {
-        if(this._ignoreBlur) {
-            this.setState({isOpen: false});
-        }
-    }
-
-    setIgnoreBlur(ignore) {
-        this._ignoreBlur = ignore;
-    }
-
-    handleSelect(value) {
-        this.setState({
-            value: value.name,
-            isOpen: false,
-        });
-    }
-
-    handleMouseEnter(event) {
-        this.setIgnoreBlur(false);
-    }
-
-    handleMouseLeave(event) {
-        this.setIgnoreBlur(true);
-    }
-
-    handleKeyDown(event) {
-        this.filterItems();
-
-        if(this.keyDownHandlers[event.key]) {
-            this.keyDownHandlers[event.key].call(this, event);
-            this.setIgnoreBlur(true);
-        } else {
-            this.setState({
-                isOpen: true,
-            });
-        }
-    }
 
     renderList() {
         if (this.state.isOpen && !this._ignoreBlur && this.state.items.length ) {
@@ -174,9 +124,69 @@ export default class Autocomplete extends Component {
         }
     }
 
-     componentWillMount () {
+    // Component event handler
+    handleSelect(value) {
+        this.setState({
+            value: value.name,
+            isOpen: false,
+        });
+    }
+
+    // Mouse event handlers
+    handleMouseEnter(event) {
+        this.setIgnoreBlur(false);
+    }
+
+    handleMouseLeave(event) {
+        this.setIgnoreBlur(true);
+    }
+
+    // Key event handlers
+    handleChange(event) {
+        this.setState({value: event.target.value});
+        this.filterItems();
+    }
+
+    handleKeyUp(event) {
+        this.filterItems()
+        this.setIgnoreBlur(false);
+    }
+
+    handleKeyDown(event) {
+        this.filterItems();
+
+        if(this.keyDownHandlers[event.key]) {
+            this.keyDownHandlers[event.key].call(this, event);
+            this.setIgnoreBlur(true);
+        } else {
+            this.setState({
+                isOpen: true,
+            });
+        }
+    }
+
+    // Focus event handlers
+    handleFocus(event) {
+        this.setState({
+            isOpen: true,
+        });
+
+        this.filterItems();
+    }
+
+    handleBlur(event) {
+        if(this._ignoreBlur) {
+            this.setState({
+                isOpen: false,
+                highlightedIndex: null,
+            });
+        }
+    }
+
+    // Component events
+    componentWillMount () {
         this._ignoreBlur = false;
-     }
+    }
 
     render() {
         return (

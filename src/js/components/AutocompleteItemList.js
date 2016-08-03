@@ -11,51 +11,69 @@ export default class AutocompleteItemList extends Component {
         this.handleClick = this.handleClick.bind(this);
         this.highlightItem = this.highlightItem.bind(this);
     }
-
-    highlightItem() {
+    
+    // Helpers
+    highlightIndexItem() {
         const items = this.props.items;
         const {highlightedIndex} = this.state;
         const element = document.getElementById(`item-${highlightedIndex}`);
 
-        if(items[highlightedIndex]) {
-            element.style.backgroundColor = '#eeeeee';
-        } else {
-            element.style.backgroundColor = 'transparent';
+        this.highlightItem(element, items[highlightedIndex]);
+    }
+
+    highlightItem(elem, highlight) {
+        if(elem !== null) {
+            if(highlight) {
+                return elem.style.backgroundColor = '#eeeeee';
+            }
+
+            return elem.style.backgroundColor = 'transparent';
         }
     }
 
-    handleClick(e) {
+    getItem(e) {
         const id = e.currentTarget.id;
         const index = id.substring(id.indexOf('-') + 1);
         const item = this.props.items[index];
+
+        return {
+            item,
+            id,
+        }
+    }
+
+    // Mouse events
+    handleClick(e) {
+        const {item} = this.getItem(e);
 
         this.props.handleSelect(item);
     }
 
     handleMouseEnter(e) {
-        const id = e.currentTarget.id;
-        const index = id.substring(id.indexOf('-') + 1);
-        const item = this.props.items[index];
+        const {id, item} = this.getItem(e);
         const element = document.getElementById(id);
         this._lastItem = element;
 
-        element.style.backgroundColor = '#eeeeee';
+        this.highlightItem(element, true);
     }
 
     handleMouseLeave(e) {
         const element = this._lastItem;
-        element.style.backgroundColor = 'transparent';
+
+        this.highlightItem(element, false);
     }
 
+    // Component methods
     componentDidMount() {
         if(this.state.highlightedIndex !== null) {
-            this.highlightItem();
+            this.highlightIndexItem();
         }
     }
 
     render() {
         const props = this.props;
 
+        // Item nodes
         const items = props.items.map(function items(item, index) {
             return (
                 <li
