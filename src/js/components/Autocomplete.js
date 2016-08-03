@@ -4,7 +4,12 @@ import AutocompleteItemList from './AutocompleteItemList';
 export default class Autocomplete extends Component {
     constructor(props) {
         super(props);
-        this.state = {value: '', isOpen: false, items: this.props.fetchData};
+        this.state = {
+            value: '',
+            isOpen: false,
+            items: this.props.fetchData,
+            ignoreBlur: false,
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
@@ -18,7 +23,6 @@ export default class Autocomplete extends Component {
 
         this.setState({value: event.target.value});
         this.filterItems();
-
     }
 
     filterItems() {
@@ -41,22 +45,34 @@ export default class Autocomplete extends Component {
     }
 
     handleFocus(event) {
-        this.setState({isOpen: true});
+        this.setState({
+            isOpen: true,
+            ignoreBlur: true,
+        });
+        this.filterItems();
     }
 
     handleBlur(event) {
-        this.setState({isOpen: false});
+        if(!this.state.ignoreBlur) {
+            this.setState({isOpen: false});
+        }
     }
 
     handleSelect(value) {
-        console.log(value);
-        this.setState({value: 'test'});
+        this.setState({
+            value: value.name,
+            isOpen: true,
+            ignoreBlur: false,
+        });
     }
 
     renderList() {
-        if (this.state.isOpen) {
+        if (this.state.isOpen && this.state.ignoreBlur) {
             return (
-                <AutocompleteItemList items={this.state.items} handleSelect={this.handleSelect}/>
+                <AutocompleteItemList
+                    items={this.state.items}
+                    handleSelect={this.handleSelect}
+                />
             );
         }
     }
@@ -68,7 +84,7 @@ export default class Autocomplete extends Component {
                     onKeyUp={this.filterItems}
                     onChange={this.handleChange}
                     onFocus={this.handleFocus}
-                    //onBlur={this.handleBlur}
+                    onBlur={this.handleBlur}
                     value={this.state.value}
                 />
 

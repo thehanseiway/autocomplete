@@ -19,7 +19,6 @@ export default class AutocompleteItem extends Component {
     }
 
     handleClick(e) {
-        console.log(e);
         this.props.selectItem(this.props.details);
     }
 
