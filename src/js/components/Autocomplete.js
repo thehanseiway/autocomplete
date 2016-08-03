@@ -183,7 +183,7 @@ export default class Autocomplete extends Component {
         }
     }
 
-    // Component events
+    // Component methods
     componentWillMount () {
         this._ignoreBlur = false;
     }
